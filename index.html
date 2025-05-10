@@ -1,0 +1,115 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spin Stars Ghost</title>
+    <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/616/616408.png" type="image/png">
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #1a1a2e;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
+            color: white;
+        }
+        #wheel {
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            border: 10px solid #fff;
+            background-image: conic-gradient(
+                #fdd835 5%, #fbc02d 5% 10%,
+                #0288d1 10% 15%, #0288d1 15% 20%,
+                #fdd835 20% 25%, #fbc02d 25% 30%,
+                #0288d1 30% 35%, #0288d1 35% 40%,
+                #ab47bc 40% 45%, #0288d1 45% 50%,
+                #fdd835 50% 55%, #fbc02d 55% 60%,
+                #0288d1 60% 65%, #0288d1 65% 70%,
+                #0288d1 70% 75%, #ab47bc 75% 80%,
+                #0288d1 80% 85%, #0288d1 85% 90%,
+                #0288d1 90% 95%, #fbc02d 95% 100%
+            );
+            position: relative;
+        }
+        #spin, #topup, #balance, #withdraw {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #0288d1;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        #pointer {
+            width: 0;
+            height: 0;
+            border-left: 15px solid transparent;
+            border-right: 15px solid transparent;
+            border-bottom: 20px solid red;
+            position: absolute;
+            top: -25px;
+            left: calc(50% - 15px);
+        }
+    </style>
+</head>
+<body>
+    <h1>Spin Stars Ghost</h1>
+    <div id="wheel">
+        <div id="pointer"></div>
+    </div>
+    <button id="spin">Крутити за 15⭐</button>
+    <button id="topup">Поповнити зірки</button>
+    <button id="balance">Перевірити баланс</button>
+    <button id="withdraw">Вивести зірки</button>
+
+    <script>
+        const spinBtn = document.getElementById('spin');
+        const topUpBtn = document.getElementById('topup');
+        const balanceBtn = document.getElementById('balance');
+        const withdrawBtn = document.getElementById('withdraw');
+
+        const tg = window.Telegram.WebApp;
+        const userId = tg.initDataUnsafe.user?.id;
+
+        // === Кнопка для перевірки балансу ===
+        balanceBtn.addEventListener('click', async () => {
+            try {
+                const response = await fetch(`/balance/${userId}`);
+                const data = await response.json();
+                alert(`Ваш баланс: ${data.balance} ⭐`);
+            } catch (error) {
+                alert('Помилка при отриманні балансу!');
+            }
+        });
+
+        // === Кнопка для виводу зірок ===
+        withdrawBtn.addEventListener('click', async () => {
+            try {
+                const response = await fetch('/withdraw', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ telegramId: userId })
+                });
+                const data = await response.json();
+                if (data.success) {
+                    alert('Виведення успішне!');
+                } else {
+                    alert(data.message);
+                }
+            } catch (error) {
+                alert('Помилка при виведенні зірок!');
+            }
+        });
+    </script>
+</body>
+</html>
