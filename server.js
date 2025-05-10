@@ -72,6 +72,29 @@ app.post('/withdraw', async (req, res) => {
   res.json({ success: true });
 });
 
+app.post('/webhook', (req, res) => {
+    const message = req.body.message;
+
+    if (message && message.text === '/start') {
+        axios.post(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+            chat_id: message.chat.id,
+            text: "Ласкаво просимо до Spin Stars Ghost! 🎰",
+            reply_markup: {
+                inline_keyboard: [
+                    [{ text: "Запустити гру", web_app: { url: "https://твій-домен-на-render.com" } }]
+                ]
+            }
+        }).then(() => {
+            res.sendStatus(200);
+        }).catch((error) => {
+            console.error(error.message);
+            res.sendStatus(500);
+        });
+    } else {
+        res.sendStatus(200);
+    }
+});
+
 app.listen(port, () => {
   console.log(`🎲 Сервер запущено на http://localhost:${port}`);
 });
